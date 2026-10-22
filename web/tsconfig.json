@@ -1,0 +1,1 @@
+{ "extends": "astro/tsconfigs/strict", "compilerOptions": { "resolveJsonModule": true, "verbatimModuleSyntax": true }, "include": [".astro/types.d.ts", "src/**/*", "e2e/**/*"] }

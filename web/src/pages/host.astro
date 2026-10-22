@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Share your screen · sharu">
+  <main id="main"><div id="app"><p>Loading…</p></div></main>
+  <script>
+    import { mount } from 'svelte';
+    import Host from '../components/Host.svelte';
+    // Manual mount (instead of client:* directives) avoids Astro's inline island loader, keeping a strict CSP.
+    mount(Host, { target: document.getElementById('app')! });
+  </script>
+</Base>

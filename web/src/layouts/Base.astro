@@ -1,0 +1,37 @@
+---
+import '../styles/fonts.css';
+import '../styles/global.css';
+interface Props { title: string; description?: string }
+const { title, description = 'Peer-to-peer screen sharing in your browser. No account, no processing of your audio or video.' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const signal = import.meta.env.PUBLIC_SIGNAL_URL as string | undefined;
+let signalOrigin = '';
+try { if (signal) signalOrigin = new URL(signal).origin.replace(/^http/, 'ws'); } catch {}
+// GitHub Pages cannot set response headers, so the CSP is delivered via <meta>.
+const csp = `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ${signalOrigin}; object-src 'none'; base-uri 'none'; form-action 'self'`;
+const source = import.meta.env.PUBLIC_SOURCE_URL ?? 'https://github.com/agostaxyz/sharu';
+---
+<!doctype html>
+<html lang="en" data-font="default">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b120e" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" href={`${base}/icon-192.png`} type="image/png" />
+    <script is:inline src={`${base}/theme-init.js`}></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to main content</a>
+    <slot />
+    <footer>
+      <button id="font-toggle" class="btn" type="button" aria-pressed="false">Dyslexia-friendly font</button>
+      <a href={source}>Source code (AGPL-3.0)</a>
+    </footer>
+    <script>import '../scripts/chrome.ts';</script>
+  </body>
+</html>

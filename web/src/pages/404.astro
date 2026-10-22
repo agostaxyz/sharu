@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<!-- GitHub Pages serves 404.html for unknown paths, so this page doubles as the viewer for /<session-code>. -->
+<Base title="Watch · sharu">
+  <main id="main"><div id="app"><p>Loading…</p></div></main>
+  <script>
+    import { mount } from 'svelte';
+    import Viewer from '../components/Viewer.svelte';
+    mount(Viewer, { target: document.getElementById('app')! });
+  </script>
+</Base>
