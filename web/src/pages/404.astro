@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import PageMain from '../components/PageMain.astro';
+---
+<!-- GitHub Pages serves 404.html for unknown paths, so this page is the viewer (and the host's own view) for /<session-code>. Never indexed. -->
+<Base title="Session · sharu" noindex>
+  <PageMain><div id="app"><p>Loading…</p></div></PageMain>
+  <script>
+    import { mount } from 'svelte';
+    import Host from '../components/Host.svelte';
+    import Viewer from '../components/Viewer.svelte';
+    import { extractCode, normalizeCode } from '../lib/code';
+    import { stripBase } from '../lib/base';
+    import { loadHostSession } from '../lib/settings';
+    const code = normalizeCode(extractCode(stripBase(location.pathname)));
+    const mine = normalizeCode(loadHostSession()?.code ?? '');
+    // Only the tab that created the session (history state survives reloads) shows the host view;
+    // any other tab opening the same link is a viewer, even in the host's own browser.
+    const hosting = !!code && code === mine && history.state?.sharuHost === true;
+    const target = document.getElementById('app')!;
+    target.replaceChildren();
+    mount(hosting ? Host : Viewer, { target });
+  </script>
+</Base>

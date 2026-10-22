@@ -1,0 +1,53 @@
+---
+import '../styles/fonts.css';
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+interface Props { title: string; description?: string; path?: string; noindex?: boolean; home?: boolean; jsonLd?: object }
+const { title, description = 'Free peer-to-peer screen sharing in your browser. No account, no install, and your audio and video are never processed.', path, noindex = false, home = false, jsonLd } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const site = (Astro.site?.origin ?? 'https://agostaxyz.github.io').replace(/\/$/, '');
+const canonical = path !== undefined ? `${site}${base}${path}` : undefined;
+const og = `${site}${base}/og-image.png`;
+const signal = import.meta.env.PUBLIC_SIGNAL_URL as string | undefined;
+let signalOrigin = '';
+try { if (signal) signalOrigin = new URL(signal).origin.replace(/^http/, 'ws'); } catch {}
+// GitHub Pages cannot set response headers, so the CSP is delivered via <meta> (production only).
+const csp = `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ${signalOrigin}; object-src 'none'; base-uri 'none'; form-action 'self'`;
+---
+<!doctype html>
+<html lang="en" data-font="default">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    {import.meta.env.PROD && <meta http-equiv="Content-Security-Policy" content={csp} />}
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b120e" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <link rel="icon" href={`${base}/icon-192.png`} sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
+    {!noindex && (<>
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="sharu" />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      {canonical && <meta property="og:url" content={canonical} />}
+      <meta property="og:image" content={og} />
+      <meta name="twitter:card" content="summary_large_image" />
+    </>)}
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <script is:inline src={`${base}/theme-init.js`}></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to main content</a>
+    <SiteHeader home={home} />
+    <slot />
+    <SiteFooter />
+    <script>import '../scripts/chrome.ts';</script>
+  </body>
+</html>

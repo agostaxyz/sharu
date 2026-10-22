@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import PageMain from '../components/PageMain.astro';
+---
+<Base title="Share your screen · sharu" noindex>
+  <PageMain><div id="app"><p>Loading…</p></div></PageMain>
+  <script>
+    import { mount } from 'svelte';
+    import Host from '../components/Host.svelte';
+    // Manual mount (instead of client:* directives) avoids Astro's inline island loader, keeping a strict CSP.
+    const target = document.getElementById('app')!;
+    target.replaceChildren(); // drop the "Loading…" placeholder
+    mount(Host, { target });
+  </script>
+</Base>

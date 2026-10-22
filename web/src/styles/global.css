@@ -1,0 +1,100 @@
+@import 'tailwindcss';
+
+/* Design tokens. `static` keeps them all available to the component utilities below via var(). */
+@theme static {
+  --color-canvas: #0b120e;
+  --color-chrome: #070d09; /* header + footer: slightly darker than canvas */
+  --color-surface: #111a14;
+  --color-surface-2: #17221b;
+  --color-line: #25352b;
+  --color-ink: #e4efe8;
+  --color-mute: #8aa092;
+  --color-brand: #3fb950;
+  --color-brand-hover: #56d364;
+  --color-on-brand: #0b120e;
+  --color-danger: #ff7b72;
+  --color-focus: #79c0ff;
+  --font-sans: 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --text-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-heading: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --text-title: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
+  --radius-card: 1rem;
+  --radius-btn: 1rem; /* 9999px for pill-shaped buttons */
+}
+
+@layer base {
+  :root { color-scheme: dark; }
+  :root[data-font='dyslexic'] { --font-sans: 'OpenDyslexic', 'Atkinson Hyperlegible Next', system-ui, sans-serif; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    display: flex; min-height: 100dvh; flex-direction: column;
+    background: var(--color-canvas); color: var(--color-ink); font-size: var(--text-body); line-height: 1.6;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  h1 { font-size: var(--text-title); line-height: 1.15; font-weight: 700; margin-bottom: 0.5rem; }
+  h2 { font-size: var(--text-heading); line-height: 1.25; font-weight: 700; margin-bottom: 0.5rem; }
+  h3 { font-size: var(--text-body); font-weight: 700; margin-bottom: 0.25rem; }
+  p { margin-block: 0.75rem; max-width: 65ch; }
+  a { color: var(--color-brand-hover); }
+  code { font-family: var(--font-mono); }
+  label { display: block; font-weight: 700; margin-bottom: 0.25rem; }
+  input[type='text'], input[type='password'] {
+    width: 100%; min-height: 3rem; padding: 0.5rem 0.75rem; font: inherit; color: var(--color-ink);
+    background: var(--color-canvas); border: 0.0625rem solid var(--color-line); border-radius: var(--radius-card);
+  }
+  input[aria-invalid='true'] { border-color: var(--color-danger); }
+  input[type='range'] { width: min(100%, 16rem); min-height: 2.75rem; accent-color: var(--color-brand); }
+  dialog { margin: auto; background: var(--color-surface); color: var(--color-ink); border: 0.0625rem solid var(--color-line);
+    border-radius: var(--radius-card); padding: 1.5rem; max-width: min(92vw, 32rem); }
+  dialog::backdrop { background: rgb(0 0 0 / 0.7); }
+  :focus-visible { outline: 0.1875rem solid var(--color-focus); outline-offset: 0.1875rem; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+  @media (forced-colors: active) { .btn, .card, input { border: 0.125rem solid CanvasText; } }
+}
+
+/* Component utilities: Tailwind only emits the ones the markup actually uses. */
+@utility btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: var(--btn-h, 3rem); min-width: 3rem; padding: 0.5rem var(--btn-px, 1.25rem);
+  font-weight: 700; text-decoration: none; cursor: pointer; border-radius: var(--radius-btn);
+  border: 0.0625rem solid var(--btn-border, var(--color-line));
+  background: var(--btn-bg, var(--color-surface-2)); color: var(--btn-fg, var(--color-ink));
+  &:hover { border-color: var(--btn-hover, var(--color-brand)); background: var(--btn-bg-hover, var(--btn-bg, var(--color-surface-2))); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+  @supports (corner-shape: squircle) { corner-shape: squircle; } /* smoother corners in browsers that support it */
+}
+@utility btn-primary { --btn-bg: var(--color-brand); --btn-bg-hover: var(--color-brand-hover); --btn-fg: var(--color-on-brand); --btn-border: var(--color-brand); --btn-hover: var(--color-brand-hover); }
+@utility btn-danger { --btn-fg: var(--color-danger); --btn-hover: var(--color-danger); }
+@utility btn-sm { --btn-h: 2.75rem; --btn-px: 0.875rem; }
+@utility btn-xl { --btn-h: 4.5rem; width: 100%; font-size: var(--text-heading); }
+@utility link-btn {
+  min-height: 2.75rem; padding-block: 0.5rem; background: none; border: 0; font: inherit; cursor: pointer;
+  color: var(--color-brand-hover); text-decoration: underline;
+  &[aria-pressed='true']::after { content: ' ✓' / ''; }
+}
+@utility card {
+  padding: var(--card-p, 1.5rem); background: var(--color-surface); border: 0.0625rem solid var(--color-line); border-radius: var(--radius-card);
+  @supports (corner-shape: squircle) { corner-shape: squircle; }
+}
+@utility card-compact { --card-p: 0.75rem 1rem; & p { margin: 0; } }
+@utility card-title { font-size: var(--text-body); font-weight: 700; margin: 0; }
+@utility notice { padding: 0.5rem 1rem; background: var(--color-surface); border-inline-start: 0.25rem solid var(--color-brand); border-radius: 0 var(--radius-card) var(--radius-card) 0; }
+@utility error { min-height: 1.6em; margin-block: 0.25rem; color: var(--color-danger); }
+@utility muted { color: var(--color-mute); }
+@utility row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-block: 1rem; }
+@utility row-tight { margin-block: 0.5rem; }
+@utility code { font-family: var(--font-mono); word-break: break-all; }
+@utility plain { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+@utility stage {
+  display: grid; place-items: center; overflow: hidden; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius-card);
+  & video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+}
+@utility footer-links {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; margin: 0; padding: 0; list-style: none;
+  & li + li::before { content: '|'; content: '|' / ''; margin-inline: 0.75rem; color: var(--color-mute); }
+}
+@utility skip {
+  position: absolute; left: -999rem;
+  &:focus { left: 1rem; top: 1rem; z-index: 10; padding: 0.5rem 1rem; background: var(--color-brand); color: var(--color-on-brand); border-radius: var(--radius-card); }
+}

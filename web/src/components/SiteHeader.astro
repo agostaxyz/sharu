@@ -1,0 +1,29 @@
+---
+interface Props { home?: boolean }
+const { home = false } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const brand = 'text-title font-bold leading-none';
+const link = 'inline-flex min-h-11 items-center underline-offset-4 hover:underline';
+---
+<header class="border-b border-line bg-chrome">
+  <div class="mx-auto flex w-full max-w-248 flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-4">
+    {home ? (
+      <div class="flex items-center gap-3">
+        <img src={`${base}/logo.svg`} alt="" width="64" height="64" class="size-14 sm:size-16" />
+        <h1 class={`${brand} mb-0`}>sharu</h1>
+      </div>
+    ) : (
+      <a href={`${base}/`} class="flex items-center gap-3 text-ink no-underline">
+        <img src={`${base}/logo.svg`} alt="" width="64" height="64" class="size-14 sm:size-16" />
+        <span class={brand}>sharu</span>
+      </a>
+    )}
+    <nav aria-label="Main">
+      <ul class="flex flex-wrap gap-x-5">
+        <li><a class={link} href={`${base}/host/`}>Start sharing</a></li>
+        <li><a class={link} href={`${base}/#join`}>Join</a></li>
+        <li><a class={link} href={`${base}/#how`}>How it works</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>

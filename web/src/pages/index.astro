@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import PageMain from '../components/PageMain.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const description = 'Free peer-to-peer screen sharing in your browser. Share a screen, send a link, done. No account, no install, and your audio and video are never processed.';
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: 'sharu', description,
+  applicationCategory: 'MultimediaApplication', operatingSystem: 'Any modern browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  license: 'https://www.gnu.org/licenses/agpl-3.0.html',
+};
+---
+<Base title="sharu: free peer-to-peer screen sharing in your browser" description={description} path="/" home jsonLd={jsonLd}>
+  <PageMain>
+    <p class="muted text-heading">Share your screen right in the browser. No account. Your audio and video are never processed.</p>
+
+    <div class="mt-8 grid gap-5 md:grid-cols-2">
+      <section id="share" class="card" aria-labelledby="share-h">
+        <h2 id="share-h">Share your screen</h2>
+        <p>Create a session and send the link to up to four people.</p>
+        <a id="share-action" class="btn btn-primary btn-xl" href={`${base}/host/`}>Start sharing</a>
+        <p id="share-unsupported" class="notice" hidden>This device can only watch. Most phones and tablets cannot share their screen from a browser.</p>
+      </section>
+      <section id="join" class="card" aria-labelledby="join-h">
+        <h2 id="join-h">Join a session</h2>
+        <form id="join-form" novalidate>
+          <label for="code">Session link or code</label>
+          <input id="code" name="code" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="code-help code-error" placeholder="Caesar-23-Pyramid" />
+          <p id="code-help" class="muted">Paste the link, or type the code.</p>
+          <p id="code-error" class="error" role="alert"></p>
+          <button class="btn btn-primary" type="submit">Join</button>
+        </form>
+      </section>
+    </div>
+
+    <section id="how" class="mt-12" aria-labelledby="how-h">
+      <h2 id="how-h">How it works</h2>
+      <ol class="ms-6 list-decimal space-y-2">
+        <li><strong>Create a session.</strong> Pick a screen, window or browser tab to share. Add a passphrase if you like.</li>
+        <li><strong>Send the link.</strong> It looks like <code>Caesar-23-Pyramid</code>: easy to read aloud, hard to guess.</li>
+        <li><strong>Watch together.</strong> Video goes straight from your browser to theirs. Viewers see only how many people are watching.</li>
+      </ol>
+    </section>
+
+    <section id="faq" class="mt-12" aria-labelledby="faq-h">
+      <h2 id="faq-h">Questions</h2>
+      <h3>Does my video go through a server?</h3>
+      <p>No. A small server introduces the browsers to each other; the video and audio travel peer to peer, encrypted by WebRTC.</p>
+      <h3>Are audio and video altered?</h3>
+      <p>No. Echo cancellation, noise suppression and auto-gain are switched off, so films keep their sound effects and voices.</p>
+      <h3>Which devices can share?</h3>
+      <p>Desktop browsers. Phones and tablets can watch. Firefox shares video only; use a Chromium browser to share sound.</p>
+      <h3>Is it ready?</h3>
+      <p>It is early alpha and open source under AGPL-3.0. <a href="https://github.com/agostaxyz/sharu/issues">Report problems on GitHub</a>.</p>
+    </section>
+    <noscript><p class="notice">sharu needs JavaScript for screen sharing.</p></noscript>
+  </PageMain>
+  <script>import '../scripts/landing.ts';</script>
+</Base>
