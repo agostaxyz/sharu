@@ -11,7 +11,7 @@ Thanks for helping. Issues and pull requests are welcome.
 Rust (stable) and Node 20+ with **pnpm**. We do not use npm or Bun.
 ```sh
 cargo test --workspace
-cd web && ./bootstrap.sh && pnpm test && pnpm e2e
+cd web && pnpm install && pnpm exec playwright install chromium firefox && pnpm test && pnpm e2e
 ```
 
 ## What a good PR looks like

@@ -36,7 +36,7 @@
   h2 { font-size: var(--text-heading); line-height: 1.25; font-weight: 700; margin-bottom: 0.5rem; }
   h3 { font-size: var(--text-body); font-weight: 700; margin-bottom: 0.25rem; }
   p { margin-block: 0.75rem; max-width: 65ch; }
-  a { color: var(--color-brand-hover); }
+  a { color: var(--color-brand-hover); text-decoration: underline; text-underline-offset: 0.2em; }
   code { font-family: var(--font-mono); }
   label { display: block; font-weight: 700; margin-bottom: 0.25rem; }
   input[type='text'], input[type='password'] {

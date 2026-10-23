@@ -76,9 +76,8 @@ We would rather be honest than impressive. What is verified and what is not:
 
 ```sh
 git clone https://github.com/agostaxyz/sharu && cd sharu
-sh scripts/fetch-license.sh          # downloads the AGPL-3.0 text (once)
 cargo test --workspace               # Rust tests
-cd web && ./bootstrap.sh             # installs dependencies with pnpm (once)
+cd web && pnpm install && pnpm exec playwright install chromium firefox
 pnpm test                            # TypeScript tests
 
 # two terminals for local development
