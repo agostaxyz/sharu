@@ -16,9 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { persist-credentials: false }
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm, cache-dependency-path: web/pnpm-lock.yaml }
+      - uses: pnpm/setup@v1
+        with:
+          package-json-file: web/package.json   # reads "packageManager" (set it in web/package.json)
+          runtime: node@24
+          cache: true
+          cache-dependency-path: web/pnpm-lock.yaml
+          install: false
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - run: pnpm build
