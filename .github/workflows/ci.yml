@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   rust:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with: { persist-credentials: false }
@@ -21,7 +21,7 @@ jobs:
       - run: cargo clippy --workspace --all-targets -- -D warnings
       - run: cargo test --workspace
   web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults: { run: { working-directory: web } }
     steps:
       - uses: actions/checkout@v7

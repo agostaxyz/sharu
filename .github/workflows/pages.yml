@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults: { run: { working-directory: web } }
     steps:
       - uses: actions/checkout@v7
@@ -28,12 +28,11 @@ jobs:
       - run: pnpm build
         env:
           PUBLIC_SIGNAL_URL: ${{ vars.SIGNAL_URL }}
-      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: web/dist }
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pages: write
       id-token: write
