@@ -11,7 +11,10 @@ concurrency:
 jobs:
   rust:
     runs-on: ubuntu-24.04
+    container: debian:13
     steps:
+      - name: Prerequisites (Debian container)
+        run: apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git build-essential xz-utils unzip
       - uses: actions/checkout@v7
         with: { persist-credentials: false }
       - uses: dtolnay/rust-toolchain@stable
@@ -22,8 +25,11 @@ jobs:
       - run: cargo test --workspace
   web:
     runs-on: ubuntu-24.04
+    container: debian:13
     defaults: { run: { working-directory: web } }
     steps:
+      - name: Prerequisites (Debian container)
+        run: apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git build-essential xz-utils unzip
       - uses: actions/checkout@v7
         with: { persist-credentials: false }
       - uses: pnpm/setup@v3
