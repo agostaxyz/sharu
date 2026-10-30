@@ -13,16 +13,15 @@
 </p>
 
 <p align="center">
-    <img alt="Rust" src="https://img.shields.io/github/languages/top/agostaxyz/sharu?&style=flat-square&label=Rust&logo=rust&color=CE422B&labelColor=0B120E">
     <a href="https://github.com/agostaxyz/sharu/actions/workflows/ci.yml">
       <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/agostaxyz/sharu/ci.yml?style=flat-square&label=CI&logo=github&labelColor=0B120E">
     </a>
     <a href="https://github.com/agostaxyz/sharu/actions/workflows/pages.yml">
       <img alt="Deploy" src="https://img.shields.io/github/actions/workflow/status/agostaxyz/sharu/pages.yml?style=flat-square&label=Deploy&logo=github&labelColor=0B120E">
     </a>
-    <img alt="Astro" src="https://img.shields.io/badge/Astro-0B120E?style=flat-square&logo=astro"> 
-    <img alt="Svelte" src="https://img.shields.io/badge/Svelte-0B120E?style=flat-square&logo=svelte"> 
-    <img alt="PWA" src="https://img.shields.io/badge/PWA-0B120E?style=flat-square&logo=pwa"> 
+    <img alt="Astro" src="https://img.shields.io/badge/Astro-0B120E?style=flat-square&logo=astro">
+    <img alt="Svelte" src="https://img.shields.io/badge/Svelte-0B120E?style=flat-square&logo=svelte">
+    <img alt="PWA" src="https://img.shields.io/badge/PWA-0B120E?style=flat-square&logo=pwa">
     <img alt="License: AGPL-3.0" src="https://img.shields.io/badge/license-AGPL--3.0-3a3a3a?style=flat-square&labelColor=0B120E&color=3fb950">
 </p>
 
