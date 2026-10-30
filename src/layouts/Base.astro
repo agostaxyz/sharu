@@ -9,11 +9,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const site = (Astro.site?.origin ?? 'https://agostaxyz.github.io').replace(/\/$/, '');
 const canonical = path !== undefined ? `${site}${base}${path}` : undefined;
 const og = `${site}${base}/og-image.png`;
-const signal = import.meta.env.PUBLIC_SIGNAL_URL as string | undefined;
-let signalOrigin = '';
-try { if (signal) signalOrigin = new URL(signal).origin.replace(/^http/, 'ws'); } catch {}
 // GitHub Pages cannot set response headers, so the CSP is delivered via <meta> (production only).
-const csp = `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' ${signalOrigin || 'wss:'}; object-src 'none'; base-uri 'none'; form-action 'self'`;
+const csp = `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' wss:; object-src 'none'; base-uri 'none'; form-action 'self'`;
 ---
 <!doctype html>
 <html lang="en" data-font="default">

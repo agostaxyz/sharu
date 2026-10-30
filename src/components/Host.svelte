@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { createSignal, signallingMode, type Signal } from '../lib/signal';
+  import { createSignal, type Signal } from '../lib/signal';
   import { captureDisplay, canShare, isFirefox, type Captured } from '../lib/capture';
   import { loadHostSession, saveHostSession, clearHostSession, type HostSession } from '../lib/settings';
   import { withBase } from '../lib/base';
@@ -29,7 +29,6 @@
   let mode: 'create' | 'resume' = 'create';
   const firefox = isFirefox();
   const supported = canShare();
-  const serverless = signallingMode() === 'p2p';
   const link = $derived(code ? `${location.origin}${withBase(`/${code}`)}` : '');
 
   // The address bar shows the livestream link while hosting. The tab flag (sessionStorage) survives reloads of THIS tab only,
@@ -75,7 +74,6 @@
         else client?.send({ type: 'create', has_audio: captured?.hasAudio ?? false, passphrase: activePass });
       },
       message: onMessage,
-      close: () => { if (phase === 'live') status = 'Connection lost. Reconnecting…'; },
     });
     client.connect();
   }
@@ -172,9 +170,7 @@
       <h2 id="pass-h" class="card-title">Passphrase</h2>
       <div class="row row-tight"><p class="code">{activePass}</p><button class="btn btn-sm" type="button" onclick={copyPass}>Copy passphrase</button></div>
     </section>
-    {#if serverless}
-      <p class="notice">Serverless mode (experimental): no relay server is used. Viewers can see each other's connection details, and anyone who knows the link can try to join, so add a passphrase for private sessions.</p>
-    {/if}
+    <p class="notice">There is no server in between: viewers can see each other's connection details, and some strict networks cannot connect.</p>
     <div class="row">
       <button class="btn btn-primary" type="button" onclick={share}>{captured ? 'Change source' : 'Choose what to share'}</button>
       <button class="btn btn-danger" type="button" onclick={endSession}>End session</button>

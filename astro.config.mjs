@@ -5,8 +5,9 @@ import AstroPWA from '@vite-pwa/astro';
 import tailwindcss from '@tailwindcss/vite';
 
 // GitHub Pages project site: https://agostaxyz.github.io/sharu/
-// Self-hosting at a domain root: SHARU_BASE=/ pnpm build
+// On a domain root (custom domain): SHARU_BASE=/ pnpm build
 const base = process.env.SHARU_BASE ?? '/sharu';
+const scope = base.endsWith('/') ? base : `${base}/`;
 
 export default defineConfig({
   site: process.env.SHARU_SITE ?? 'https://agostaxyz.github.io',
@@ -22,8 +23,8 @@ export default defineConfig({
         name: 'sharu',
         short_name: 'sharu',
         description: 'Peer-to-peer screen sharing in your browser.',
-        start_url: base.endsWith('/') ? base : `${base}/`,
-        scope: base.endsWith('/') ? base : `${base}/`,
+        start_url: scope,
+        scope,
         display: 'standalone',
         background_color: '#0b120e',
         theme_color: '#0b120e',
@@ -33,13 +34,12 @@ export default defineConfig({
           { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
-      // App shell only. Never cache signalling; unknown URLs (session codes) go to the network/404 page.
+      // App shell only; session links (unknown URLs) always go to the network / 404 page.
       workbox: { navigateFallback: undefined, globPatterns: ['**/*.{js,css,html,png,woff2}'] },
     }),
   ],
   vite: {
     plugins: [tailwindcss()],
     build: { assetsInlineLimit: 0 }, // keep everything external so a strict CSP works
-    server: { proxy: { '/ws': { target: 'http://127.0.0.1:8080', ws: true } } },
   },
 });

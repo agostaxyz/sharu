@@ -9,24 +9,9 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  rust:
-    runs-on: ubuntu-24.04
-    container: debian:13
-    steps:
-      - name: Prerequisites (Debian container)
-        run: apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git build-essential xz-utils unzip
-      - uses: actions/checkout@v7
-        with: { persist-credentials: false }
-      - uses: dtolnay/rust-toolchain@stable
-        with: { components: "rustfmt, clippy" }
-      - uses: Swatinem/rust-cache@v2
-      - run: cargo fmt --all --check
-      - run: cargo clippy --workspace --all-targets -- -D warnings
-      - run: cargo test --workspace
   web:
     runs-on: ubuntu-24.04
     container: debian:13
-    defaults: { run: { working-directory: web } }
     steps:
       - name: Prerequisites (Debian container)
         run: apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git build-essential xz-utils unzip
@@ -34,10 +19,10 @@ jobs:
         with: { persist-credentials: false }
       - uses: pnpm/setup@v3
         with:
-          package-json-file: web/package.json   # reads "packageManager" (set it in web/package.json)
+          package-json-file: package.json   # reads "packageManager" (set it in web/package.json)
           runtime: node@26
           cache: true
-          cache-dependency-path: web/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
           install: false
       - run: pnpm install --frozen-lockfile
       - run: pnpm check

@@ -1,6 +1,7 @@
 import wordlistRaw from './wordlist.txt?raw';
 
-// Mirrors crates/server/src/codes.rs; shared vectors in crates/proto/fixtures/code_vectors.json.
+// Session codes: 2-4 capitalised words plus one two-digit number after a word (e.g. Caesar-23-Pyramid-Orchid).
+// Shared test vectors: ./code_vectors.json.
 const isNumber = (p: string) => /^\d{2}$/.test(p);
 const isWord = (p: string) => /^[A-Za-z]{4,16}$/.test(p);
 

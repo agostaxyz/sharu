@@ -60,8 +60,7 @@
     client = await createSignal('viewer', {
       open: () => client?.send({ type: 'join', code, nickname: nickname.trim() || undefined, passphrase: passphrase.trim() || undefined }),
       message: onMessage,
-      close: ({ willRetry }) => { if (phase === 'watching' && willRetry) problem = 'Connection lost. Reconnecting…'; },
-    }, false);
+    });
     client.connect();
   }
 

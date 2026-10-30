@@ -19,9 +19,9 @@
     <a href="https://github.com/agostaxyz/sharu/actions/workflows/pages.yml">
       <img alt="Deploy" src="https://img.shields.io/github/actions/workflow/status/agostaxyz/sharu/pages.yml?style=flat-square&label=Deploy&logo=github&labelColor=0B120E">
     </a>
-    <img alt="Astro" src="https://img.shields.io/badge/Astro-0B120E?style=flat-square&logo=astro">
-    <img alt="Svelte" src="https://img.shields.io/badge/Svelte-0B120E?style=flat-square&logo=svelte">
-    <img alt="PWA" src="https://img.shields.io/badge/PWA-0B120E?style=flat-square&logo=pwa">
+    <img alt="Astro" src="https://img.shields.io/badge/Astro-0B120E?style=flat-square&logo=astro"> 
+    <img alt="Svelte" src="https://img.shields.io/badge/Svelte-0B120E?style=flat-square&logo=svelte"> 
+    <img alt="PWA" src="https://img.shields.io/badge/PWA-0B120E?style=flat-square&logo=pwa"> 
     <img alt="License: AGPL-3.0" src="https://img.shields.io/badge/license-AGPL--3.0-3a3a3a?style=flat-square&labelColor=0B120E&color=3fb950">
 </p>
 
@@ -40,27 +40,24 @@ Firefox shares video only (no audio streaming yet); use a Chromium browser to sh
 ## Get started
 
 ```sh
-git clone https://github.com/agostaxyz/sharu && cd sharu/web
+git clone https://github.com/agostaxyz/sharu
+cd sharu
 pnpm install
-PUBLIC_SIGNALLING=p2p pnpm dev       # http://localhost:4321, no server needed
+pnpm dev
 ```
 
-Tests: `pnpm test` and `pnpm e2e` in `web/`, `cargo test --workspace` at the root.
-To run with the Rust signalling server instead, start `cargo run -p sharu-server` in another terminal and use plain `pnpm dev`.
-Deployment is covered in [docs/DEPLOY.md](docs/DEPLOY.md). Screen capture needs a secure context: `localhost` works, a phone needs HTTPS.
+Open http://localhost:4321. Run the checks with `pnpm test` and `pnpm e2e`. Screen capture needs a secure context: `localhost` works, a phone needs HTTPS.
 
 ## Under the hood
 
-Video and audio are always peer to peer (WebRTC, one connection per viewer, up to four). Only the introduction differs:
-
 ```
-serverless (GitHub Pages)   host ◄── public relays: the session code is the room ──► viewer
-self-hosted                 host ◄──── WebSocket ──── sharu-server ──── WebSocket ────► viewer
+host  ◄── public relays: the session code is the room ──►  viewer
+  └────────────── WebRTC video and audio, peer to peer ──────────┘
 ```
 
-- **`web/`**: Astro static site, Svelte 5 islands mounted by hand (keeps a strict CSP), Tailwind CSS.
-- **`crates/server`**: optional Rust signalling server (axum): session codes, viewers, kicks, rate limits. **`crates/proto`**: its JSON protocol, shared with the web app through test fixtures.
-- In serverless mode the host's browser plays the server's role, using [Trystero](https://github.com/dmotz/trystero) to find peers. Viewers can then see each other's connection details, and there is no relay for strict networks, so the self-hosted server remains the more robust option.
+- A static [Astro](https://astro.build) site with [Svelte](https://svelte.dev) 5 islands (mounted by hand, which keeps a strict CSP) and Tailwind CSS.
+- There is no backend. [Trystero](https://github.com/dmotz/trystero) uses public relays only to introduce browsers; the host's browser then acts as the session's server (viewers, kicks, passphrase). Video and audio never touch a relay.
+- One WebRTC connection per viewer, up to four. Viewers can see each other's connection details, and strict networks that need a relay server cannot connect.
 - Session codes carry about 34 bits; the passphrase (suggested for you, or your own) is the second factor.
 
 ## Prior art and credits
@@ -69,4 +66,4 @@ self-hosted                 host ◄──── WebSocket ──── sharu-se
 
 ## License
 
-AGPL-3.0-or-later. If you run a modified sharu as a service, you must offer your users its source; the site footer links to it (`PUBLIC_SOURCE_URL`). Contributions are accepted under the same license.
+AGPL-3.0-or-later. If you run a modified sharu as a service, you must offer your users its source; the site footer links to it. Contributions are accepted under the same license.

@@ -1,5 +1,5 @@
-// Mirrors crates/proto/src/lib.rs; checked against crates/proto/fixtures/*.json.
-export type PeerId = number;
+// Messages exchanged between the host and its viewers (carried over the peer-to-peer channel).
+type PeerId = number;
 export type HostStatus = 'live' | 'left' | 'lost' | 'ended';
 export type ErrorCode = 'bad_message' | 'not_found' | 'wrong_passphrase' | 'session_full' | 'nickname_taken'
   | 'nickname_invalid' | 'forbidden' | 'rate_limited' | 'already_joined' | 'internal';
@@ -27,7 +27,3 @@ export type ServerMsg =
   | { type: 'audio_changed'; has_audio: boolean }
   | { type: 'kicked' } | { type: 'pong' }
   | { type: 'error'; code: ErrorCode; message: string };
-
-export const CLIENT_TYPES = ['create', 'resume', 'join', 'signal', 'set_audio', 'kick', 'leaving', 'end', 'ping'] as const;
-export const SERVER_TYPES = ['created', 'resumed', 'joined', 'viewer_joined', 'viewer_left', 'viewer_count', 'signal',
-  'host_state', 'audio_changed', 'kicked', 'pong', 'error'] as const;

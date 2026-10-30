@@ -1,10 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: cargo
-    directory: /
-    schedule: { interval: weekly }
   - package-ecosystem: npm
-    directory: /web
+    directory: /
     schedule: { interval: weekly }
     cooldown: { default-days: 14 }
   - package-ecosystem: github-actions

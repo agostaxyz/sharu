@@ -1,9 +1,8 @@
 ## What and why
 
 ## How I tested it
-- [ ] `cargo test --workspace` / `pnpm test` / `pnpm e2e`
-- [ ] Protocol changed? Rust, TypeScript and fixtures updated together
-- [ ] Accessible by keyboard and screen reader; no inline styles/scripts
+- [ ] `pnpm check`, `pnpm test` and `pnpm e2e` pass
+- [ ] Keyboard and screen-reader friendly; no inline styles or scripts (strict CSP)
 - [ ] No code copied from incompatible licenses; credits updated if needed
 
 Closes #
