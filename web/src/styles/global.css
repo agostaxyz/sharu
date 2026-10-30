@@ -109,3 +109,9 @@
   & .logo-tri { animation: logo-play 0.6s ease-out; }
   & .logo-ripple { animation: logo-ripple 0.6s ease-out; }
 }
+
+/* While hosting on the home page, hide everything except the share card. */
+@layer base {
+  html[data-hosting] .home-only { display: none; }
+  html[data-hosting] #share { grid-column: 1 / -1; }
+}

@@ -5,7 +5,7 @@ const del = (k: string) => { try { localStorage.removeItem(k); } catch { /* igno
 export const getNickname = () => get('sharu.nickname') ?? '';
 export const setNickname = (n: string) => set('sharu.nickname', n);
 
-export interface HostSession { code: string; token: string }
+export interface HostSession { code: string; token: string; passphrase?: string }
 export function loadHostSession(): HostSession | null {
   try { const v = JSON.parse(get('sharu.host') ?? 'null'); return v?.code && v?.token ? v : null; } catch { return null; }
 }

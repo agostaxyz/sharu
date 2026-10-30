@@ -7,7 +7,9 @@ export interface SignalEvents {
 }
 
 /** WebSocket client with heartbeat and exponential-backoff reconnect. */
-export class SignalClient {
+export interface Signal { connect(): void; send(m: ClientMsg): void; close(): void }
+
+export class SignalClient implements Signal {
   private ws: WebSocket | null = null;
   private attempt = 0;
   private stopped = false;
@@ -54,9 +56,26 @@ export class SignalClient {
   }
 }
 
-export function signalUrl(): string | null {
+export type SignallingMode = 'server' | 'p2p';
+
+/** server = our Rust signalling server; p2p = serverless rendezvous (used on GitHub Pages). Override with PUBLIC_SIGNALLING. */
+export function signallingMode(): SignallingMode {
+  const forced = import.meta.env.PUBLIC_SIGNALLING as string | undefined;
+  if (forced === 'p2p' || forced === 'server') return forced;
+  if (import.meta.env.PUBLIC_SIGNAL_URL) return 'server';
+  return location.hostname.endsWith('.github.io') ? 'p2p' : 'server';
+}
+
+export function signalUrl(): string {
   const configured = import.meta.env.PUBLIC_SIGNAL_URL as string | undefined;
-  if (configured) return configured;
-  if (location.hostname.endsWith('.github.io')) return null; // Pages cannot host a WebSocket server
-  return `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`;
+  return configured || `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws`;
+}
+
+/** The serverless transport is loaded lazily so server-mode builds never download it. */
+export async function createSignal(role: 'host' | 'viewer', ev: SignalEvents, reconnect = true): Promise<Signal> {
+  if (signallingMode() === 'p2p') {
+    const { P2PHost, P2PViewer } = await import('./p2p');
+    return role === 'host' ? new P2PHost(ev) : new P2PViewer(ev);
+  }
+  return new SignalClient(signalUrl(), ev, reconnect);
 }

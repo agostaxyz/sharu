@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { SignalClient, signalUrl } from '../lib/signal';
+  import { createSignal, type Signal } from '../lib/signal';
   import { extractCode, normalizeCode } from '../lib/code';
   import { stripBase, withBase } from '../lib/base';
   import { getNickname, setNickname } from '../lib/settings';
@@ -12,7 +12,6 @@
   let code = $state('');
   let nickname = $state('');
   let passphrase = $state('');
-  let askPassphrase = $state(false);
   let problem = $state('');
   let closedReason = $state('');
   let hostStatus = $state<HostStatus>('live');
@@ -24,7 +23,7 @@
   let supportsVolume = $state(true);
   let video: HTMLVideoElement | undefined = $state();
   let stage: HTMLElement | undefined = $state();
-  let client: SignalClient | null = null;
+  let client: Signal | null = null;
   let mesh: ViewerMesh | null = null;
   let stream = $state<MediaStream | null>(null);
   let videoActive = $state(false);
@@ -54,13 +53,11 @@
   // Announce the watcher count politely: debounce so screen readers are not flooded.
   $effect(() => { const c = count; const t = setTimeout(() => (shownCount = c), 1500); return () => clearTimeout(t); });
 
-  function join(e: Event) {
+  async function join(e: Event) {
     e.preventDefault(); // this click is also the user gesture that allows audio playback
-    const url = signalUrl();
-    if (!url) { problem = 'This site has no signalling server configured yet.'; return; }
     problem = ''; phase = 'connecting';
     client?.close();
-    client = new SignalClient(url, {
+    client = await createSignal('viewer', {
       open: () => client?.send({ type: 'join', code, nickname: nickname.trim() || undefined, passphrase: passphrase.trim() || undefined }),
       message: onMessage,
       close: ({ willRetry }) => { if (phase === 'watching' && willRetry) problem = 'Connection lost. Reconnecting…'; },
@@ -88,8 +85,8 @@
       case 'kicked': mesh?.close(); client?.close(); phase = 'closed'; closedReason = 'The host removed you from this session.'; break;
       case 'error': {
         const back = () => { phase = 'form'; client?.close(); };
-        if (m.code === 'wrong_passphrase') { askPassphrase = true; problem = 'This session needs the right passphrase.'; back(); }
-        else if (m.code === 'not_found') { phase = 'closed'; closedReason = 'No session with that code exists (anymore).'; }
+        if (m.code === 'wrong_passphrase') { problem = 'That passphrase is not right.'; back(); }
+        else if (m.code === 'not_found') { phase = 'closed'; closedReason = 'No session was found for that code. If the host set a passphrase, check it too.'; }
         else if (m.code === 'session_full') { phase = 'closed'; closedReason = 'This session is full.'; }
         else if (m.code === 'nickname_taken') { problem = 'That nickname is taken. Pick another or leave it empty.'; back(); }
         else if (m.code === 'nickname_invalid') { problem = 'Nicknames use 2 to 24 letters or digits, no spaces.'; back(); }
@@ -118,12 +115,10 @@
     <label for="nick">Nickname (optional)</label>
     <input id="nick" type="text" autocomplete="nickname" spellcheck="false" bind:value={nickname} aria-describedby="nick-help" />
     <p id="nick-help" class="muted">Leave empty for a random one. Only the host sees nicknames.</p>
-    {#if askPassphrase}
-      <label for="pass">Passphrase</label>
-      <input id="pass" type="password" autocomplete="off" bind:value={passphrase} />
-    {/if}
+    <label for="pass">Passphrase</label>
+    <input id="pass" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ask the host for it" required bind:value={passphrase} />
     <p class="error" role="alert">{problem}</p>
-    <button class="btn btn-primary" type="submit" disabled={phase === 'connecting'}>{phase === 'connecting' ? 'Connecting…' : 'Join'}</button>
+    <button class="btn btn-primary" type="submit" disabled={phase === 'connecting'}>{phase === 'connecting' ? 'Connecting…' : 'Join Session'}</button>
   </form>
 {:else if phase === 'watching'}
   <h1>Watching</h1>

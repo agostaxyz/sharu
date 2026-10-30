@@ -14,11 +14,14 @@ import PageMain from '../components/PageMain.astro';
     import { loadHostSession } from '../lib/settings';
     const code = normalizeCode(extractCode(stripBase(location.pathname)));
     const mine = normalizeCode(loadHostSession()?.code ?? '');
-    // Only the tab that created the session (history state survives reloads) shows the host view;
+    // Only the tab that created the session (sessionStorage survives reloads) shows the host view;
     // any other tab opening the same link is a viewer, even in the host's own browser.
-    const hosting = !!code && code === mine && history.state?.sharuHost === true;
+    let tab: string | null = null;
+    try { tab = sessionStorage.getItem('sharu.hostTab'); } catch { /* ignore */ }
+    const hosting = !!code && code === mine && tab === code;
     const target = document.getElementById('app')!;
     target.replaceChildren();
-    mount(hosting ? Host : Viewer, { target });
+    if (hosting) mount(Host, { target });
+    else mount(Viewer, { target });
   </script>
 </Base>
