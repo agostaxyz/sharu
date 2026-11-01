@@ -1,0 +1,31 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  web:
+    runs-on: ubuntu-24.04
+    container: debian:13
+    steps:
+      - name: Prerequisites (Debian container)
+        run: apt-get update && apt-get install -y --no-install-recommends ca-certificates curl git build-essential xz-utils unzip
+      - uses: actions/checkout@v7
+        with: { persist-credentials: false }
+      - uses: pnpm/setup@v3
+        with:
+          package-json-file: package.json   # reads "packageManager" (set it in web/package.json)
+          runtime: node@26
+          cache: true
+          cache-dependency-path: pnpm-lock.yaml
+          install: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm test
+      - run: pnpm exec playwright install --with-deps chromium firefox
+      - run: pnpm e2e

@@ -1,0 +1,13 @@
+---
+const source = import.meta.env.PUBLIC_SOURCE_URL ?? 'https://github.com/agostaxyz/sharu';
+---
+<footer class="border-t border-line bg-chrome">
+  <div class="mx-auto flex w-full max-w-248 justify-center px-4 py-4 text-mute">
+    <nav aria-label="Footer">
+      <ul class="footer-links">
+        <li><button id="font-toggle" class="link-btn" type="button" aria-pressed="false">Dyslexia-friendly font</button></li>
+        <li><a href={source}>Source code (AGPL-3.0)</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>

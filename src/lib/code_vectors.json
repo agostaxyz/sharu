@@ -1,0 +1,4 @@
+{
+  "valid": ["Caesar-23-Pyramid", "caesar-pyramid-23", "Amber-Harbor-45-Willow", "Amber-Harbor-Willow-45", "Amber-45-Harbor-Willow-Orchid"],
+  "invalid": ["", "abc-12-def", "Caesar-Pyramid", "12-Caesar-Pyramid", "Caesar-123-Pyramid", "Caesar-23-Pyramid-Orchid-Amber-Willow", "Caesar-23-45-Pyramid", "Caesar_23_Pyramid", "Caesar-2x-Pyramid"]
+}
