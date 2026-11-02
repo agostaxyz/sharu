@@ -27,6 +27,8 @@ jobs:
       - run: pnpm check
       - run: pnpm test
       - run: pnpm exec playwright install --with-deps chromium firefox
+        env:
+          HOME: /root
       - run: pnpm e2e
         env:
           HOME: /root
