@@ -19,7 +19,6 @@ jobs:
         with: { persist-credentials: false }
       - uses: pnpm/setup@v3
         with:
-          package-json-file: package.json   # reads "packageManager" (set it in web/package.json)
           runtime: node@26
           cache: true
           cache-dependency-path: pnpm-lock.yaml
@@ -29,3 +28,7 @@ jobs:
       - run: pnpm test
       - run: pnpm exec playwright install --with-deps chromium firefox
       - run: pnpm e2e
+        env:
+          HOME: /root
+        env:
+          HOME: /root
