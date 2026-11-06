@@ -13,7 +13,8 @@ const MAX_VIEWERS = 4;
 const ICE: IceServer[] = [{ urls: ['stun:stun.cloudflare.com:3478'] }];
 const LOST_GRACE_S = 60;
 const LEFT_GRACE_S = 10;
-const JOIN_TIMEOUT_MS = 20_000;
+const ATTEMPT_MS = 8_000; // wait this long for the host, then retry with a fresh room join
+const MAX_ATTEMPTS = 3;
 
 type Send = (data: unknown, to?: string) => unknown;
 type On = (cb: (data: unknown, from: string) => void) => void;
@@ -166,6 +167,7 @@ export class P2PViewer implements Signal {
   private joinMsg: Extract<ViewerMsg, { type: 'join' }> | null = null;
   private joined = false; private nickname = ''; private noticed = false;
   private joinTimer = 0; private goneTimer = 0;
+  private attempts = 1;
 
   constructor(private ev: SignalEvents) {}
 
@@ -176,7 +178,7 @@ export class P2PViewer implements Signal {
   }
 
   send(m: ViewerMsg): void {
-    if (m.type === 'join') { this.joinMsg = m; this.start(m); }
+    if (m.type === 'join') { this.joinMsg = m; this.attempts = 1; this.start(m); }
     else if (m.type === 'signal' && this.hostTid) this.c2h?.({ type: 'signal', to: 0, data: m.data }, this.hostTid);
   }
 
@@ -193,9 +195,15 @@ export class P2PViewer implements Signal {
     // Nobody answers if the code is wrong, the host is offline, or the passphrase does not match.
     this.joinTimer = window.setTimeout(() => {
       if (this.joined) return;
+      if (this.attempts < MAX_ATTEMPTS) {
+        this.attempts++;
+        this.hostTid = ''; this.proof = '';
+        this.start(m); // leaves the room and joins again, which re-announces us to the relays
+        return;
+      }
       this.ev.message(err('not_found', 'No session found for that code and passphrase.'));
       this.close();
-    }, JOIN_TIMEOUT_MS);
+    }, ATTEMPT_MS);
   }
 
   private sendJoin(): void {
