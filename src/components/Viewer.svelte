@@ -22,6 +22,8 @@
   let shownCount = $state(0);
   let volume = $state(100);
   let fullscreen = $state(false);
+  let barVisible = $state(true);
+  let hideTimer = 0;
   let supportsVolume = $state(true);
   let video: HTMLVideoElement | undefined = $state();
   let stage: HTMLElement | undefined = $state();
@@ -96,6 +98,13 @@
         break;
       }
     }
+  }
+
+  // In fullscreen the controls fade out after a moment, like most video players.
+  function nudgeBar() {
+    barVisible = true;
+    clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => (barVisible = false), 2500);
   }
 
   async function toggleFullscreen() {

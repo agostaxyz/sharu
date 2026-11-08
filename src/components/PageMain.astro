@@ -1,1 +1,5 @@
-<main id="main" class="mx-auto w-full max-w-248 flex-1 px-4 py-8"><slot /></main>
+---
+interface Props { wide?: boolean }
+const { wide = false } = Astro.props;
+---
+<main id="main" class={`mx-auto w-full flex-1 px-4 py-8 ${wide ? 'max-w-420' : 'max-w-248'}`}><slot /></main>

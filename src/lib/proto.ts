@@ -12,18 +12,20 @@ export type ViewerMsg =
   | { type: 'join'; code: string; nickname?: string; passphrase?: string }
   | { type: 'signal'; to: PeerId; data: unknown }
   | { type: 'set_audio'; has_audio: boolean; muted?: boolean }
+  | { type: 'set_paused'; paused: boolean }
   | { type: 'kick'; peer: PeerId }
   | { type: 'leaving' } | { type: 'end' };
 
 export type HostMsg =
   | { type: 'created'; code: string; host_token: string; ice_servers: IceServer[]; max_viewers: number }
   | { type: 'resumed'; code: string; has_audio: boolean; viewers: ViewerInfo[]; ice_servers: IceServer[] }
-  | { type: 'joined'; peer: PeerId; nickname: string; host: HostStatus; has_audio: boolean; muted?: boolean; viewer_count: number; ice_servers: IceServer[] }
+  | { type: 'joined'; peer: PeerId; nickname: string; host: HostStatus; has_audio: boolean; muted?: boolean; paused?: boolean; viewer_count: number; ice_servers: IceServer[] }
   | { type: 'viewer_joined'; peer: PeerId; nickname: string }
   | { type: 'viewer_left'; peer: PeerId }
   | { type: 'viewer_count'; count: number }
   | { type: 'signal'; from: PeerId; data: unknown }
   | { type: 'host_state'; status: HostStatus; grace_secs?: number }
   | { type: 'audio_changed'; has_audio: boolean; muted?: boolean }
+  | { type: 'paused_changed'; paused: boolean }
   | { type: 'kicked' }
   | { type: 'error'; code: ErrorCode; message: string };

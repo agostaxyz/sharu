@@ -1,10 +1,9 @@
 <script lang="ts">
-  // Decorative level meter: a row of bars that rises and falls with the audio. The audio is only analysed, never
-  // altered or played from here (the <video> element does the playing). `level` (0..1) is the volume slider.
-  let { stream = null, level = 1, active = true }: { stream?: MediaStream | null; level?: number; active?: boolean } = $props();
+  // Decorative level meter. It only analyses the audio (never plays or alters it). `level` (0..1) is the volume slider.
+  let { stream = null, level = 1, active = true, tone = 'brand' }: { stream?: MediaStream | null; level?: number; active?: boolean; tone?: 'brand' | 'dark' } = $props();
 
-  const BARS = 24;
-  const MIN = 0.14; // shortest bar, as a fraction of the height, so quiet audio never looks "dead"
+  const BARS = 16;
+  const MIN = 0.3; // shortest bar as a fraction of the height: quiet audio never looks dead
   let canvas: HTMLCanvasElement | undefined = $state();
 
   $effect(() => {
@@ -12,7 +11,7 @@
     const ctx = c?.getContext('2d');
     if (!c || !ctx) return;
     const s = stream; // tracked: restart when the stream changes
-    const color = getComputedStyle(c).getPropertyValue('--color-brand').trim() || '#3fb950';
+    const color = getComputedStyle(c).getPropertyValue(tone === 'dark' ? '--color-on-brand' : '--color-brand').trim() || '#3fb950';
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const smooth = new Float32Array(BARS);
     let ac: AudioContext | null = null;
@@ -28,7 +27,7 @@
         analyser = ac.createAnalyser();
         analyser.fftSize = 64;
         analyser.smoothingTimeConstant = 0.6;
-        source.connect(analyser); // not connected to the speakers: analysis only
+        source.connect(analyser); // analysis only, not connected to the speakers
         data = new Uint8Array(analyser.frequencyBinCount);
         void ac.resume();
       }
@@ -47,7 +46,7 @@
         const x = i * bw + bw * 0.15;
         const w = bw * 0.7;
         ctx.beginPath();
-        ctx.roundRect(x, H - h, w, h, Math.min(w / 2, 6));
+        ctx.roundRect(x, (H - h) / 2, w, h, Math.min(w / 2, 6)); // grows from the centre line outward
         ctx.fill();
       }
     };
@@ -56,4 +55,4 @@
   });
 </script>
 
-<canvas bind:this={canvas} width="384" height="96" class="h-12 w-48" aria-hidden="true"></canvas>
+<canvas bind:this={canvas} width="320" height="52" class="h-6.5 w-40" aria-hidden="true"></canvas>

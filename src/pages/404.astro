@@ -4,7 +4,7 @@ import PageMain from '../components/PageMain.astro';
 ---
 <!-- GitHub Pages serves 404.html for unknown paths, so this page is the viewer (and the host's own view) for /<session-code>. Never indexed. -->
 <Base title="Session · sharu" noindex>
-  <PageMain><div id="app"><p>Loading…</p></div></PageMain>
+  <PageMain wide><div id="app"><p>Loading…</p></div></PageMain>
   <script>
     import { mount } from 'svelte';
     import Host from '../components/Host.svelte';

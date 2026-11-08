@@ -45,6 +45,7 @@ export class P2PHost implements Signal {
   private code = ''; private token = ''; private pass = ''; private proof = '';
   private hasAudio = false;
   private muted = false;
+  private paused = false;
   private next = 1;
   private viewers = new Map<number, { tid: string; nickname: string }>();
   private byTid = new Map<string, number>();
@@ -95,6 +96,10 @@ export class P2PHost implements Signal {
         if (v) { this.banned.add(v.tid); this.tell(v.tid, { type: 'kicked' }); this.drop(v.tid); }
         break;
       }
+      case 'set_paused':
+        this.paused = m.paused;
+        this.broadcast({ type: 'paused_changed', paused: m.paused });
+        break;
       case 'leaving': this.broadcast({ type: 'host_state', status: 'left', grace_secs: LEFT_GRACE_S }); break;
       case 'end':
         this.broadcast({ type: 'host_state', status: 'ended' });
@@ -126,7 +131,7 @@ export class P2PHost implements Signal {
 
   private onJoin(tid: string, m: Extract<ViewerMsg, { type: 'join' }>): void {
     const reply = (peer: number, nickname: string) => this.tell(tid, {
-      type: 'joined', peer, nickname, host: 'live', has_audio: this.hasAudio, muted: this.muted, viewer_count: this.viewers.size, ice_servers: ICE,
+      type: 'joined', peer, nickname, host: 'live', has_audio: this.hasAudio, muted: this.muted, paused: this.paused, viewer_count: this.viewers.size, ice_servers: ICE,
     });
     const existing = this.byTid.get(tid);
     if (existing !== undefined) { reply(existing, this.viewers.get(existing)!.nickname); return; }
