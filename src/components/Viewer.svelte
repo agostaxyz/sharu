@@ -125,33 +125,47 @@
     <label for="nick">Nickname (optional)</label>
     <input id="nick" type="text" autocomplete="nickname" spellcheck="false" bind:value={nickname} aria-describedby="nick-help" />
     <p id="nick-help" class="muted">Leave empty for a random one. Only the host sees nicknames.</p>
-    <label for="pass">Passphrase</label>
-    <input id="pass" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ask the host for it" required bind:value={passphrase} />
     <p class="error" role="alert">{problem}</p>
     <button class="btn btn-primary" type="submit" disabled={phase === 'connecting'}>{phase === 'connecting' ? 'Connecting…' : 'Join Session'}</button>
   </form>
 {:else if phase === 'watching'}
-  <h1>Watching</h1>
-  <p role="status" aria-live="polite">{problem || hostText}</p>
+  <h1>Watch</h1>
+  <p role="status" aria-live="polite">{problem || (hostStatus === 'live' ? '🔴 Live' : hostText)}</p>
   {#if hostStatus === 'live' && !videoActive}<p role="status" class="muted">Waiting for the host to share a screen…</p>{/if}
-  <div class="stage" bind:this={stage}>
-    <video bind:this={video} autoplay playsinline aria-label="Shared screen"></video>
-  </div>
-  <div class="row">
-    <p role="status" aria-live="polite" class="muted"><output>{shownCount}</output> {shownCount === 1 ? 'person' : 'people'} watching</p>
-    {#if !hasAudio}
-      <span class="pill" role="status">No audio in the host's source</span>
-    {:else if hostMuted}
-      <span class="pill" role="status">The host muted the sound</span>
-    {:else}
-      {#if supportsVolume}
-        <label class="row" for="vol">Volume
-          <input id="vol" type="range" min="0" max="100" step="1" bind:value={volume} aria-valuetext={`${volume} percent`} />
-        </label>
-      {/if}
-      <AudioBars {stream} level={volume / 100} />
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="watch-wrap" bind:this={stage} ondblclick={toggleFullscreen} onpointermove={nudgeBar}>
+    <div class={videoActive ? 'stage' : 'stage aspect-video'}>
+      <video bind:this={video} autoplay playsinline aria-label="Shared screen"></video>
+    </div>
+    {#if fullscreen}
+      <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+      <div class={`absolute inset-x-0 bottom-0 z-20 flex items-center gap-6 bg-linear-to-t from-black/80 to-transparent px-6 py-4 transition-opacity ${barVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}`} role="group" aria-label="Playback controls" ondblclick={(e) => e.stopPropagation()}>
+        <button class="btn btn-primary btn-sm" type="button" onclick={toggleFullscreen}>Exit fullscreen</button>
+        {#if supportsVolume && hasAudio && !hostMuted}
+          <label class="flex items-center gap-3 text-sm font-bold text-white">Volume
+            <input type="range" min="0" max="100" step="1" bind:value={volume} aria-valuetext={`${volume} percent`} />
+          </label>
+        {/if}
+      </div>
     {/if}
-    <button class="btn" type="button" aria-pressed={fullscreen} onclick={toggleFullscreen}>{fullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button>
+  </div>
+  <div class="mt-4 flex items-center justify-between gap-4">
+    <div class="pill-bar">
+      <span class="text-lg" role="status" aria-live="polite" aria-label={`${shownCount} watching`}>👤 {shownCount}</span>
+      {#if !hasAudio}
+        <span class="pill" role="status">No audio in the host's source</span>
+      {:else if hostMuted}
+        <span class="pill" role="status">The host muted the sound</span>
+      {:else}
+        {#if supportsVolume}
+          <label class="grid justify-items-center gap-0.5 text-sm">Volume
+            <input id="vol" type="range" class="w-40" min="0" max="100" step="1" bind:value={volume} aria-valuetext={`${volume} percent`} />
+          </label>
+        {/if}
+        <AudioBars {stream} level={volume / 100} tone="dark" />
+      {/if}
+    </div>
+    <button class="btn shrink-0" type="button" aria-pressed={fullscreen} onclick={toggleFullscreen}>{fullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button>
   </div>
 {:else}
   <h1>Session closed</h1>

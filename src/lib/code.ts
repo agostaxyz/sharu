@@ -47,5 +47,3 @@ export function generateCode(nWords = 3): string {
   return parts.join('-');
 }
 
-/** Suggested passphrase for a new session, e.g. Cedar-72-Mellow. */
-export const generatePassphrase = (): string => generateCode(2);

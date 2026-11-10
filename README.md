@@ -27,7 +27,7 @@
 
 <table>
   <tr>
-    <td width="25%" valign="top"><h3>🔗 One link</h3>Start a session and send one link, like <code>Caesar-23-Pyramid</code>. Easy to read aloud, hard to guess, and protected by a passphrase.</td>
+    <td width="25%" valign="top"><h3>🔗 One link</h3>Start a session and send one link, like <code>Caesar-23-Pyramid</code>. Easy to read aloud and hard to guess.</td>
     <td width="25%" valign="top"><h3>🎬 Untouched media</h3>Echo cancellation, noise suppression and auto-gain are switched off, so films keep their SFX and voices.</td>
     <td width="25%" valign="top"><h3>🔒 Private</h3>No account, no tracking, no data gathered. Video and audio go straight from your browser to your viewers'.</td>
     <td width="25%" valign="top"><h3>🪶 Lightweight</h3>A static site with nothing to run: it works from GitHub Pages. Installable as an app.</td>
@@ -58,7 +58,7 @@ host  ◄── public relays: the session code is the room ──►  viewer
 - A static [Astro](https://astro.build) site with [Svelte](https://svelte.dev) 5 islands (mounted by hand, which keeps a strict CSP) and Tailwind CSS.
 - There is no backend. [Trystero](https://github.com/dmotz/trystero) uses public relays only to introduce browsers; the host's browser then acts as the session's server (viewers, kicks, passphrase). Video and audio never touch a relay.
 - One WebRTC connection per viewer, up to four. Viewers can see each other's connection details, and strict networks that need a relay server cannot connect.
-- Session codes carry about 34 bits; the passphrase (suggested for you, or your own) is the second factor.
+- Session codes carry about 34 bits and cannot be listed or guessed online; the host sees who is watching and can kick anyone.
 
 ## License
 

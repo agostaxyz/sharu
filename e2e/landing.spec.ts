@@ -7,16 +7,12 @@ test('landing page has no detectable accessibility violations', async ({ page })
   expect(results.violations).toEqual([]);
 });
 
-test('invalid link shows an announced error', async ({ page }) => {
+test('the one action on the home page is starting a live', async ({ page }) => {
   await page.goto('./');
-  await page.getByLabel('Session link').fill('nope');
-  await page.getByRole('button', { name: 'Join Session' }).click();
-  await expect(page.locator('#code-error')).toContainText('does not look like a session link');
+  await expect(page.getByRole('button', { name: 'Start a live' })).toBeVisible();
 });
 
-test('valid link navigates to the session page', async ({ page }) => {
-  await page.goto('./');
-  await page.getByLabel('Session link').fill('Caesar-23-Pyramid');
-  await page.getByRole('button', { name: 'Join Session' }).click();
-  await expect(page).toHaveURL(/Caesar-23-Pyramid$/);
+test('a session link opens the join page', async ({ page }) => {
+  await page.goto('./Caesar-23-Pyramid');
+  await expect(page.getByRole('button', { name: 'Join Session' })).toBeVisible();
 });

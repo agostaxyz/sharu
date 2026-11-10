@@ -14,33 +14,23 @@ const jsonLd = {
     <p class="muted text-heading home-only">Share your screen right in the browser. No account. Your audio and video are never processed.</p>
 
     <div class="home-only">
-      <p class="notice" data-audio="firefox" hidden>Firefox does not support audio streaming through <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia" rel="noopener noreferrer"><code>getDisplayMedia()</code></a> yet, sorry. Use a Chromium browser if you want to share sound. Video works fine.</p>
-      <p class="notice" data-audio="linux" hidden>On Linux, Chromium-based browsers can only share the audio of a browser tab. To include sound, share a tab and tick “Share tab audio”.</p>
-      <p class="notice" data-audio="both" hidden>Firefox does not support audio streaming through <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia" rel="noopener noreferrer"><code>getDisplayMedia()</code></a> yet, sorry. Use a Chromium browser to share sound; on Linux it can only share the audio of a browser tab (share a tab and tick “Share tab audio”). Video works fine.</p>
+      <p class="notice" data-audio="firefox" hidden>Firefox does not support audio streaming through <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia" rel="noopener noreferrer"><code>getDisplayMedia()</code></a> yet, sorry. Use a Chromium browser to share sound.</p>
+      <p class="notice" data-audio="linux" hidden>On Linux, audio sharing only works for browser tabs for now.</p>
+      <p class="notice" data-audio="both" hidden>Under Linux and a Firefox-based browser you can't currently share your audio. If you use a Chromium-based browser, you can share your tabs' audio, at least.</p>
     </div>
 
-    <div class="mt-8 grid gap-5 md:grid-cols-2">
-      <section id="share" class="card flex flex-col" aria-labelledby="share-h">
+    <div class="mt-8">
+      <section id="share" class="card flex min-w-0 flex-col" aria-labelledby="share-h">
         <h2 id="share-h">Share your screen</h2>
-        <div id="share-app" class="flex flex-1 flex-col"><noscript><p class="notice">sharu needs JavaScript for screen sharing.</p></noscript></div>
-      </section>
-      <section id="join" class="card home-only flex flex-col" aria-labelledby="join-h">
-        <h2 id="join-h">Join a session</h2>
-        <form id="join-form" class="flex flex-1 flex-col" novalidate>
-          <label for="code">Session link</label>
-          <input id="code" name="code" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="code-help code-error" placeholder="Paste the session link here" />
-          <p id="code-help" class="muted">The link the host sent you.</p>
-          <p id="code-error" class="error" role="alert"></p>
-          <button class="btn btn-primary btn-xl mt-auto" type="submit">Join Session</button>
-        </form>
+        <div id="share-app" class="flex min-w-0 flex-1 flex-col"><noscript><p class="notice">sharu needs JavaScript for screen sharing.</p></noscript></div>
       </section>
     </div>
 
     <section id="how" class="mt-12 home-only" aria-labelledby="how-h">
       <h2 id="how-h">How it works</h2>
       <ol class="ms-6 list-decimal space-y-2">
-        <li><strong>Create a session.</strong> Pick a screen, window or browser tab to share. A passphrase is suggested for you, or choose your own.</li>
-        <li><strong>Send the link and the passphrase.</strong> The link looks like <code>Caesar-23-Pyramid</code>: easy to read aloud, hard to guess.</li>
+        <li><strong>Start a live.</strong> Pick a screen, window or browser tab to share.</li>
+        <li><strong>Send the link.</strong> The link looks like <code>Caesar-23-Pyramid</code>: easy to read aloud, hard to guess.</li>
         <li><strong>Watch together.</strong> Video goes straight from your browser to theirs. Viewers see only how many people are watching.</li>
       </ol>
     </section>
