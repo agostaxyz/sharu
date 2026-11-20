@@ -13,6 +13,6 @@ test('the one action on the home page is starting a live', async ({ page }) => {
 });
 
 test('a session link opens the join page', async ({ page }) => {
-  await page.goto('./Caesar-23-Pyramid');
+  await page.goto('./Caesar-Pyramid-Orchid');
   await expect(page.getByRole('button', { name: 'Join Session' })).toBeVisible();
 });

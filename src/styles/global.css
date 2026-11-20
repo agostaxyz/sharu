@@ -118,7 +118,7 @@
 
 /* Read-only status that looks like a button (used instead of the volume slider when there is nothing to adjust). */
 @utility pill {
-  display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0.25rem 1rem; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 0.75rem; min-height: 3rem; padding: 0.25rem 1rem; border-radius: 999px;
   border: 0.0625rem dashed var(--color-line); background: var(--color-surface); color: var(--color-mute);
 }
 
@@ -130,8 +130,8 @@
 }
 
 @utility pill-bar {
-  display: flex; flex: 1; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.5rem;
-  max-width: 42rem; padding: 0.75rem 1.25rem; border-radius: 1rem; font-weight: 700;
+  display: flex; width: fit-content; max-width: 100%; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem;
+  padding: 0.75rem 1.25rem; border-radius: 1rem; font-weight: 700;
   background: var(--color-brand); color: var(--color-on-brand);
   & input[type='range'] { accent-color: var(--color-on-brand); }
   & .pill { background: transparent; border-color: var(--color-on-brand); color: var(--color-on-brand); }

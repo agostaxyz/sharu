@@ -213,6 +213,9 @@
   {:else if phase === 'connecting'}
     <p role="status">Connecting…</p><p class="error" role="alert">{problem}</p>
   {:else}
+    {#if captured && !captured.hasAudio}
+      <p class="notice">This source has no audio, so viewers will not hear anything. That is how your browser shares this source, not a Sharu problem. {firefox ? 'Firefox cannot share audio yet; use a Chromium browser.' : 'Share a browser tab and tick “Share tab audio” to include sound.'}</p>
+    {/if}
     {#if captured}
       <div class="stage"><video bind:this={preview} autoplay muted playsinline aria-label="Preview of what you are sharing"></video></div>
     {:else}
@@ -221,17 +224,14 @@
       </div>
     {/if}
     <div class="row">
+        <div class="pill">
+          <span class="text-lg" role="status" aria-live="polite" aria-label={`${viewers.length} watching`}>👤 {viewers.length}</span>
+          {#if captured?.hasAudio}<AudioBars stream={captured.stream} active={!muted && !paused} />{/if}
+        </div>
       {#if captured}<button class="btn btn-primary" type="button" onclick={share}>Change source</button>{/if}
       {#if captured?.hasAudio}<button class="btn" type="button" aria-pressed={muted} onclick={toggleMute}>{muted ? 'Unmute sound' : 'Mute sound'}</button>{/if}
       {#if captured}<button class="btn" type="button" aria-pressed={paused} onclick={togglePause}>{paused ? 'Resume live' : 'Pause live'}</button>{/if}
       <button class="btn btn-danger" type="button" onclick={endSession}>End session</button>
-    </div>
-    {#if captured && !captured.hasAudio}
-      <p class="notice">This source has no audio, so viewers will not hear anything. That is how your browser shares this source, not a Sharu problem. {firefox ? 'Firefox cannot share audio yet; use a Chromium browser.' : 'Share a browser tab and tick “Share tab audio” to include sound.'}</p>
-    {/if}
-    <div class="pill-bar mt-2">
-      <span class="text-lg" role="status" aria-live="polite" aria-label={`${viewers.length} watching`}>👤 {viewers.length}</span>
-      {#if captured?.hasAudio}<AudioBars stream={captured.stream} active={!muted && !paused} tone="dark" />{/if}
     </div>
     {#if viewers.length}
       <ul class="mt-3 flex flex-wrap gap-2" aria-label="Viewers">

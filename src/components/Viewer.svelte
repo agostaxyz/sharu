@@ -46,7 +46,7 @@
     const probe = document.createElement('video');
     probe.volume = 0.5;
     supportsVolume = probe.volume === 0.5; // iOS Safari ignores video.volume
-    const onFs = () => (fullscreen = !!document.fullscreenElement);
+    const onFs = () => { fullscreen = !!document.fullscreenElement; if (fullscreen) nudgeBar(); };
     document.addEventListener('fullscreenchange', onFs);
     return () => document.removeEventListener('fullscreenchange', onFs);
   });
@@ -88,8 +88,7 @@
       case 'kicked': mesh?.close(); client?.close(); phase = 'closed'; closedReason = 'The host removed you from this session.'; break;
       case 'error': {
         const back = () => { phase = 'form'; client?.close(); };
-        if (m.code === 'wrong_passphrase') { problem = 'That passphrase is not right.'; back(); }
-        else if (m.code === 'not_found') { phase = 'closed'; closedReason = 'No session was found for that code. If the host set a passphrase, check it too.'; }
+        if (m.code === 'not_found') { phase = 'closed'; closedReason = m.message; }
         else if (m.code === 'session_full') { phase = 'closed'; closedReason = 'This session is full.'; }
         else if (m.code === 'nickname_taken') { problem = 'That nickname is taken. Pick another or leave it empty.'; back(); }
         else if (m.code === 'nickname_invalid') { problem = 'Nicknames use 2 to 24 letters or digits, no spaces.'; back(); }
@@ -104,7 +103,7 @@
   function nudgeBar() {
     barVisible = true;
     clearTimeout(hideTimer);
-    hideTimer = window.setTimeout(() => (barVisible = false), 2500);
+    hideTimer = window.setTimeout(() => (barVisible = false), 1200);
   }
 
   async function toggleFullscreen() {
@@ -133,23 +132,25 @@
   <p role="status" aria-live="polite">{problem || (hostStatus === 'live' ? '🔴 Live' : hostText)}</p>
   {#if hostStatus === 'live' && !videoActive}<p role="status" class="muted">Waiting for the host to share a screen…</p>{/if}
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="watch-wrap" bind:this={stage} ondblclick={toggleFullscreen} onpointermove={nudgeBar}>
+  <div class="watch-wrap" bind:this={stage} ondblclick={toggleFullscreen} onpointermove={nudgeBar} onpointerdown={nudgeBar}>
     <div class={videoActive ? 'stage' : 'stage aspect-video'}>
       <video bind:this={video} autoplay playsinline aria-label="Shared screen"></video>
     </div>
     {#if fullscreen}
       <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-      <div class={`absolute inset-x-0 bottom-0 z-20 flex items-center gap-6 bg-linear-to-t from-black/80 to-transparent px-6 py-4 transition-opacity ${barVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}`} role="group" aria-label="Playback controls" ondblclick={(e) => e.stopPropagation()}>
-        <button class="btn btn-primary btn-sm" type="button" onclick={toggleFullscreen}>Exit fullscreen</button>
+      <div class={`absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-6 bg-linear-to-t from-black/80 to-transparent px-6 py-4 transition-opacity ${barVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}`} role="group" aria-label="Playback controls" ondblclick={(e) => e.stopPropagation()}>
         {#if supportsVolume && hasAudio && !hostMuted}
-          <label class="flex items-center gap-3 text-sm font-bold text-white">Volume
-            <input type="range" min="0" max="100" step="1" bind:value={volume} aria-valuetext={`${volume} percent`} />
+          <label class="flex items-center gap-3 text-white"><span aria-hidden="true" class="text-xl">🔊</span><span class="sr-only">Volume</span>
+            <input type="range" class="w-40 sm:w-56" min="0" max="100" step="1" bind:value={volume} aria-valuetext={`${volume} percent`} />
           </label>
+        {:else}
+          <span></span>
         {/if}
+        <button class="btn btn-sm shrink-0" type="button" onclick={toggleFullscreen}>Exit fullscreen</button>
       </div>
     {/if}
   </div>
-  <div class="mt-4 flex items-center justify-between gap-4">
+  <div class="mt-4 flex items-center justify-center gap-4">
     <div class="pill-bar">
       <span class="text-lg" role="status" aria-live="polite" aria-label={`${shownCount} watching`}>👤 {shownCount}</span>
       {#if !hasAudio}
@@ -164,8 +165,8 @@
         {/if}
         <AudioBars {stream} level={volume / 100} tone="dark" />
       {/if}
+      <button class="btn btn-sm shrink-0" type="button" aria-pressed={fullscreen} onclick={toggleFullscreen}>{fullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button>
     </div>
-    <button class="btn shrink-0" type="button" aria-pressed={fullscreen} onclick={toggleFullscreen}>{fullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button>
   </div>
 {:else}
   <h1>Session closed</h1>

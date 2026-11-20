@@ -168,6 +168,8 @@ export class P2PViewer implements Signal {
   private joined = false; private nickname = ''; private noticed = false;
   private joinTimer = 0; private goneTimer = 0;
   private attempts = 1;
+  private sawPeer = false;
+  private extended = false;
 
   constructor(private ev: SignalEvents) {}
 
@@ -178,7 +180,7 @@ export class P2PViewer implements Signal {
   }
 
   send(m: ViewerMsg): void {
-    if (m.type === 'join') { this.joinMsg = m; this.attempts = 1; this.start(m); }
+    if (m.type === 'join') { this.joinMsg = m; this.attempts = 1; this.sawPeer = false; this.extended = false; this.start(m); }
     else if (m.type === 'signal' && this.hostTid) this.c2h?.({ type: 'signal', to: 0, data: m.data }, this.hostTid);
   }
 
@@ -188,22 +190,34 @@ export class P2PViewer implements Signal {
     this.room?.leave();
     const room = joinRoom(roomConfig((m.passphrase ?? '').trim()), key);
     this.room = room;
+    room.onPeerJoin = () => { this.sawPeer = true; };
     this.c2h = action(room, 'c2h').send;
     action(room, 'hello').on((d, tid) => this.onHello(d, tid));
     action(room, 'h2c').on((d, tid) => this.onHost(d, tid));
     room.onPeerLeave = (tid: string) => this.onLeave(tid);
-    // Nobody answers if the code is wrong, the host is offline, or the passphrase does not match.
+    // Nobody answers if the code is wrong, the host is offline.
     this.joinTimer = window.setTimeout(() => {
       if (this.joined) return;
-      if (this.attempts < MAX_ATTEMPTS) {
+      if (this.sawPeer && !this.extended) { // someone answered: keep waiting instead of restarting the negotiation
+        this.extended = true;
+        this.joinTimer = window.setTimeout(() => { if (!this.joined) this.fail(true); }, 25_000);
+        return;
+      }
+      if (!this.sawPeer && this.attempts < MAX_ATTEMPTS) {
         this.attempts++;
         this.hostTid = ''; this.proof = '';
         this.start(m); // leaves the room and joins again, which re-announces us to the relays
         return;
       }
-      this.ev.message(err('not_found', 'No session found for that code and passphrase.'));
-      this.close();
+      this.fail(this.sawPeer);
     }, ATTEMPT_MS);
+  }
+
+  private fail(found: boolean): void {
+    this.ev.message(err('not_found', found
+      ? 'Found the live, but the connection could not be set up. A network on either side probably blocks direct connections.'
+      : 'No live found for this link. Check the link, or the host may have stopped.'));
+    this.close();
   }
 
   private sendJoin(): void {
